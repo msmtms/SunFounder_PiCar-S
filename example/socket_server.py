@@ -4,6 +4,29 @@ from picar import front_wheels
 from picar import back_wheels
 import picar
 import json
+from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+
+
+class S(BaseHTTPRequestHandler):
+    def _set_headers(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+
+    def do_GET(self):
+        self._set_headers()
+        self.wfile.write("<html><body><h1>hi!</h1></body></html>")
+
+    def do_HEAD(self):
+        self._set_headers()
+
+    def do_POST(self):
+        content_length = int(self.headers['Content-Length'])  # <--- Gets the size of data
+        post_data = self.rfile.read(content_length)  # <--- Gets the data itself
+        self._set_headers()
+        print "received:", post_data
+        car_control.event_handler(json.loads(post_data))
+        self.wfile.write("received")
 
 
 class CarControl:
@@ -84,29 +107,21 @@ class CarControl:
         self.fw.turn(90)
 
 
-class MyTCPHandler(SocketServer.BaseRequestHandler):
-    """
-    The request handler class for our server.
 
-    It is instantiated once per connection to the server, and must
-    override the handle() method to implement communication to the
-    client.
-    """
-
-    def handle(self):
-        # self.request is the TCP socket connected to the client
-        self.data = self.request.recv(1024).strip()
-        message = json.loads(self.data)
-        car_control.event_handler(message)
-        self.request.sendall("response")
+def run(server_class=HTTPServer, handler_class=S, port=9999):
+    server_address = ('', port)
+    httpd = server_class(server_address, handler_class)
+    print 'Starting httpd...'
+    httpd.serve_forever()
 
 
 if __name__ == "__main__":
-    HOST, PORT = "192.168.1.32", 9999
-    car_control = CarControl()
-    # Create the server, binding to localhost on port 9999
-    server = SocketServer.TCPServer((HOST, PORT), MyTCPHandler)
+    from sys import argv
 
-    # Activate the server; this will keep running until you
-    # interrupt the program with Ctrl-C
-    server.serve_forever()
+    car_control = CarControl()
+
+    if len(argv) == 2:
+        run(port=int(argv[1]))
+    else:
+        run()
+

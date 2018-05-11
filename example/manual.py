@@ -1,4 +1,4 @@
-import socket
+from http import client
 import json
 from pynput import keyboard
 
@@ -8,8 +8,7 @@ class KeyHandler:
 
     def __init__(self):
         super(KeyHandler, self).__init__()
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.connect((self.HOST, self.PORT))
+        self.conn = client.HTTPConnection(self.HOST, self.PORT)
         with keyboard.Listener(
                 on_press=self.on_press,
                 on_release=self.on_release) as self.listener:
@@ -22,15 +21,13 @@ class KeyHandler:
             message = dict()
             message['event'] = str(key)
             message['reset'] = False
-            self.socket.sendall(json.dumps(message).encode('ascii'))
-            recieved = self.socket.recv(1024)
+            self.conn.request("POST", "", json.dumps(message))
 
     def on_release(self, key):
         message = dict()
         message['event'] = str(key)
         message['reset'] = True
-        self.socket.sendall(json.dumps(message).encode('ascii'))
-        recieved = self.socket.recv(1024)
+        self.conn.request("POST", "", json.dumps(message))
         if key == keyboard.Key.esc:
             # Stop listener
             return False
