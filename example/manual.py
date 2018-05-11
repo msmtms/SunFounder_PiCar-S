@@ -22,16 +22,18 @@ class KeyHandler:
             message = dict()
             message['event'] = str(key)
             message['reset'] = False
-            self.socket.sendall(json.dumps(message))
+            self.socket.sendall(json.dumps(message).encode('ascii'))
+            recieved = self.socket.recv(1024)
 
     def on_release(self, key):
         message = dict()
         message['event'] = str(key)
         message['reset'] = True
-        self.socket.sendall(json.dumps(message))
+        self.socket.sendall(json.dumps(message).encode('ascii'))
+        recieved = self.socket.recv(1024)
         if key == keyboard.Key.esc:
             # Stop listener
             return False
 
 
-
+handler = KeyHandler()

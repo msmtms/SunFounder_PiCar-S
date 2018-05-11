@@ -98,6 +98,7 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
         self.data = self.request.recv(1024).strip()
         message = json.loads(self.data)
         car_control.event_handler(message)
+        self.request.sendall("response")
 
 
 if __name__ == "__main__":
