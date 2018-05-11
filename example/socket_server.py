@@ -93,19 +93,16 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
     client.
     """
 
-    def __init__(self):
-        self.car_controller = CarControl()
-
     def handle(self):
         # self.request is the TCP socket connected to the client
         self.data = self.request.recv(1024).strip()
         message = json.loads(self.data)
-        self.car_controller.event_handler(message)
+        car_control.event_handler(message)
 
 
 if __name__ == "__main__":
     HOST, PORT = "192.168.1.32", 9999
-
+    car_control = CarControl()
     # Create the server, binding to localhost on port 9999
     server = SocketServer.TCPServer((HOST, PORT), MyTCPHandler)
 
