@@ -93,8 +93,7 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
     client.
     """
 
-    def __init__(self, *args, **kwargs):
-        super(MyTCPHandler, self).__init__(*args, **kwargs)
+    def __init__(self):
         self.car_controller = CarControl()
 
     def handle(self):
