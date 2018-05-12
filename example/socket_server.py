@@ -87,7 +87,7 @@ class CarControl:
         self.fw.turn(90)
 
 
-daemon = Pyro4.Daemon(host="0.0.0.0", port=9999)
+daemon = Pyro4.Daemon(host="192.168.1.32", port=9999)
 uri = daemon.register(CarControl)
 print(uri)
 daemon.requestLoop()
