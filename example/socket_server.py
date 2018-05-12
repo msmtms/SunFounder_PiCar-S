@@ -1,13 +1,11 @@
-import SocketServer
-from threading import Thread
 from picar import front_wheels
 from picar import back_wheels
 import picar
-from rpyc.utils.server import ThreadedServer
-from rpyc import Service
+import Pyro4
 
 
-class CarControl(Thread):
+@Pyro4.expose
+class CarControl:
     FORWARD = 'Key.up'
     BACKWARD = 'Key.down'
     LEFT = 'Key.left'
@@ -41,10 +39,6 @@ class CarControl(Thread):
         self.movement_reset[self.RIGHT] = self.turn_straight
 
         self.key_map = dict()
-
-    def run(self):
-        while True:
-            pass
 
     def event_handler(self, message):
         event = message['event']
@@ -92,9 +86,9 @@ class CarControl(Thread):
 
 
 
-car_control = CarControl()
-car_control.start()
+daemon = Pyro4.Daemon()
+uri = daemon.register(CarControl)
+print(uri)
+daemon.requestLoop()
 
-server = ThreadedServer(Service, hostname="0.0.0.0", port=9999)
-server.start()
 
