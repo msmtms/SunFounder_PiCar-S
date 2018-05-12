@@ -40,7 +40,7 @@ class CarControl:
 
         self.key_map = dict()
 
-    @Pyro4.expose
+
     def event_handler(self, message):
         message = json.load(message)
         event = message['event']
@@ -66,23 +66,29 @@ class CarControl:
                     self.movement_reset[event]()
         self.key_map[event] = False
 
+    @Pyro4.expose
     def accelerate(self):
         self.bw.speed = 70
         self.bw.forward()
 
+    @Pyro4.expose
     def decelerate(self):
         self.bw.speed = 70
         self.bw.backward()
 
+    @Pyro4.expose
     def turn_left(self):
         self.fw.turn(135)
 
+    @Pyro4.expose
     def turn_right(self):
         self.fw.turn(45)
 
+    @Pyro4.expose
     def stop(self):
         self.bw.speed = 0
 
+    @Pyro4.expose
     def turn_straight(self):
         self.fw.turn(90)
 
@@ -94,4 +100,5 @@ Pyro4.Daemon.serveSimple(
     },
     ns=False,
     host="192.168.1.32",
-    port=9999)
+    port=9999
+)
