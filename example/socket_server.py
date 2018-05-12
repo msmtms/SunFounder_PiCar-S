@@ -2,6 +2,7 @@ from picar import front_wheels
 from picar import back_wheels
 import picar
 import Pyro4
+import json
 
 
 @Pyro4.expose
@@ -41,6 +42,7 @@ class CarControl:
         self.key_map = dict()
 
     def event_handler(self, message):
+        message = json.load(message)
         event = message['event']
         reset = message['reset']
         if not reset:
@@ -85,10 +87,7 @@ class CarControl:
         self.fw.turn(90)
 
 
-
-daemon = Pyro4.Daemon()
+daemon = Pyro4.Daemon(host="0.0.0.0", port=9999)
 uri = daemon.register(CarControl)
 print(uri)
 daemon.requestLoop()
-
-
