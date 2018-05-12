@@ -41,6 +41,7 @@ class CarControl:
 
         self.key_map = dict()
 
+    @Pyro4.expose
     def event_handler(self, message):
         message = json.load(message)
         event = message['event']
