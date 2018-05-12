@@ -17,7 +17,6 @@ class CarControl:
         self.fw = front_wheels.Front_Wheels(db='config')
         self.bw = back_wheels.Back_Wheels(db='config')
 
-        lf.read_analog = adc.read
         self.bw.speed = 70
         self.fw.turning_max = 45
 
