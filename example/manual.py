@@ -8,7 +8,7 @@ class KeyHandler:
 
     def __init__(self):
         super(KeyHandler, self).__init__()
-        self.conn = rpyc.connect(self.HOST, self.PORT)
+        self.conn = rpyc.classic.connect(self.HOST, self.PORT)
         with keyboard.Listener(
                 on_press=self.on_press,
                 on_release=self.on_release) as self.listener:

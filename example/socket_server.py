@@ -3,8 +3,8 @@ from threading import Thread
 from picar import front_wheels
 from picar import back_wheels
 import picar
-from rpyc.utils.server import Server
-from rpyc import SlaveService
+from rpyc.utils.server import ThreadedServer
+from rpyc import Service
 
 
 class CarControl(Thread):
@@ -91,11 +91,15 @@ class CarControl(Thread):
         self.fw.turn(90)
 
 
+class RPCServer(Server):
+
+    def __init__(self):
+
+
+
 car_control = CarControl()
 car_control.start()
 
-server = Server(SlaveService, hostname="0.0.0.0", port=9999)
+server = ThreadedServer(Service, hostname="0.0.0.0", port=9999)
 server.start()
-
-
 
