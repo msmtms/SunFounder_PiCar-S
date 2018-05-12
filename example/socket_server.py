@@ -16,6 +16,8 @@ class CarControl:
         picar.setup()
         self.fw = front_wheels.Front_Wheels(db='config')
         self.bw = back_wheels.Back_Wheels(db='config')
+
+        lf.read_analog = adc.read
         self.bw.speed = 70
         self.fw.turning_max = 45
 
@@ -69,13 +71,13 @@ class CarControl:
     @Pyro4.expose
     def accelerate(self):
         print "accelerating"
-        self.bw.speed = 70
         self.bw.forward()
+        self.bw.speed = 70
 
     @Pyro4.expose
     def decelerate(self):
-        self.bw.speed = 70
         self.bw.backward()
+        self.bw.speed = 70
 
     @Pyro4.expose
     def turn_left(self):
@@ -87,7 +89,7 @@ class CarControl:
 
     @Pyro4.expose
     def stop(self):
-        self.bw.speed = 0
+        self.bw.stop()
 
     @Pyro4.expose
     def turn_straight(self):
