@@ -68,6 +68,7 @@ class CarControl:
 
     @Pyro4.expose
     def accelerate(self):
+        print "accelerating"
         self.bw.speed = 70
         self.bw.forward()
 
