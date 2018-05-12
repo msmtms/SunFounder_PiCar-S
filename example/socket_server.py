@@ -3,31 +3,8 @@ from threading import Thread
 from picar import front_wheels
 from picar import back_wheels
 import picar
-import json
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-
-
-class S(BaseHTTPRequestHandler):
-    def _set_headers(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'text/html')
-        self.end_headers()
-
-    def do_GET(self):
-        self._set_headers()
-        self.wfile.write("<html><body><h1>hi!</h1></body></html>")
-
-    def do_HEAD(self):
-        self._set_headers()
-
-    def do_POST(self):
-        content_length = int(self.headers['Content-Length'])  # <--- Gets the size of data
-        post_data = self.rfile.read(content_length)  # <--- Gets the data itself
-        self._set_headers()
-        print "received:", post_data
-        car_control.event_handler(json.loads(post_data))
-        print "Sent control"
-        self.wfile.write("received")
+from rpyc.utils.server import Server
+from rpyc import SlaveService
 
 
 class CarControl(Thread):
@@ -114,22 +91,11 @@ class CarControl(Thread):
         self.fw.turn(90)
 
 
+car_control = CarControl()
+car_control.start()
 
-def run(server_class=HTTPServer, handler_class=S, port=9999):
-    server_address = ('', port)
-    httpd = server_class(server_address, handler_class)
-    print 'Starting httpd...'
-    httpd.serve_forever()
+server = Server(SlaveService, hostname="0.0.0.0", port=9999)
+server.start()
 
 
-if __name__ == "__main__":
-    from sys import argv
-
-    car_control = CarControl()
-    car_control.start()
-
-    if len(argv) == 2:
-        run(port=int(argv[1]))
-    else:
-        run()
 

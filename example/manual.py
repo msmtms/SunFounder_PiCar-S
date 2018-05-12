@@ -1,6 +1,6 @@
-from http import client
 import json
 from pynput import keyboard
+import rpyc
 
 
 class KeyHandler:
@@ -8,7 +8,7 @@ class KeyHandler:
 
     def __init__(self):
         super(KeyHandler, self).__init__()
-        self.conn = client.HTTPConnection(self.HOST, self.PORT)
+        self.conn = rpyc.connect(self.HOST, self.PORT)
         with keyboard.Listener(
                 on_press=self.on_press,
                 on_release=self.on_release) as self.listener:
@@ -21,13 +21,13 @@ class KeyHandler:
             message = dict()
             message['event'] = str(key)
             message['reset'] = False
-            self.conn.request("POST", "", json.dumps(message))
+            self.conn.execute("car_control.event_handler(" + str(message) + ")")
 
     def on_release(self, key):
         message = dict()
         message['event'] = str(key)
         message['reset'] = True
-        self.conn.request("POST", "", json.dumps(message))
+        self.conn.execute("car_control.event_handler(" + str(message) + ")")
         if key == keyboard.Key.esc:
             # Stop listener
             return False
