@@ -26,16 +26,18 @@ class S(BaseHTTPRequestHandler):
         self._set_headers()
         print "received:", post_data
         car_control.event_handler(json.loads(post_data))
+        print "Sent control"
         self.wfile.write("received")
 
 
-class CarControl:
+class CarControl(Thread):
     FORWARD = 'Key.up'
     BACKWARD = 'Key.down'
     LEFT = 'Key.left'
     RIGHT = 'Key.right'
 
     def __init__(self):
+        super(CarControl, self).__init__()
         picar.setup()
         self.fw = front_wheels.Front_Wheels(db='config')
         self.bw = back_wheels.Back_Wheels(db='config')
@@ -63,6 +65,10 @@ class CarControl:
 
         self.key_map = dict()
 
+    def run(self):
+        while True:
+            pass
+
     def event_handler(self, message):
         event = message['event']
         reset = message['reset']
@@ -70,6 +76,7 @@ class CarControl:
             if event in self.key_map:
                 if not self.key_map[event]:
                     if event in self.movement_dispatch:
+                        print "Moving car"
                         self.movement_dispatch[event]()
             self.key_map[event] = True
         else:
@@ -119,6 +126,7 @@ if __name__ == "__main__":
     from sys import argv
 
     car_control = CarControl()
+    car_control.start()
 
     if len(argv) == 2:
         run(port=int(argv[1]))
