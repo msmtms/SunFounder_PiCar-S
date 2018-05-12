@@ -91,11 +91,6 @@ class CarControl(Thread):
         self.fw.turn(90)
 
 
-class RPCServer(Server):
-
-    def __init__(self):
-
-
 
 car_control = CarControl()
 car_control.start()
