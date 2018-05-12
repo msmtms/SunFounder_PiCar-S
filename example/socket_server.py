@@ -13,7 +13,6 @@ class CarControl:
     RIGHT = 'Key.right'
 
     def __init__(self):
-        super(CarControl, self).__init__()
         picar.setup()
         self.fw = front_wheels.Front_Wheels(db='config')
         self.bw = back_wheels.Back_Wheels(db='config')
@@ -88,13 +87,7 @@ class CarControl:
         self.fw.turn(90)
 
 
-obj = CarControl()
-Pyro4.Daemon.serveSimple(
-    {
-        CarControl: None,    # register the class
-        obj: None             # register one specific instance
-    },
-    ns=False,
-    host="192.168.1.32",
-    port=9999
-)
+daemon = Pyro4.Daemon(host="192.168.1.32", port=9999)
+uri = daemon.register(CarControl)
+print(uri)
+daemon.requestLoop()
