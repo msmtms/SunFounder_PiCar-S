@@ -20,7 +20,7 @@ class CarControl:
         self.bw.speed = 70
         self.fw.turning_max = 45
 
-        self.forward_speed = 70
+        self.forward_speed = 90
         self.backward_speed = 70
 
         self.back_distance = 10
@@ -41,6 +41,7 @@ class CarControl:
 
         self.key_map = dict()
 
+        self.bw.stop()
 
     def event_handler(self, message):
         message = json.load(message)
@@ -71,7 +72,7 @@ class CarControl:
     def accelerate(self):
         print "accelerating"
         self.bw.forward()
-        self.bw.speed = 70
+        self.bw.speed = 90
 
     @Pyro4.expose
     def decelerate(self):
@@ -80,11 +81,11 @@ class CarControl:
 
     @Pyro4.expose
     def turn_left(self):
-        self.fw.turn(135)
+        self.fw.turn(45)
 
     @Pyro4.expose
     def turn_right(self):
-        self.fw.turn(45)
+        self.fw.turn(135)
 
     @Pyro4.expose
     def stop(self):
